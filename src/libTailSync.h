@@ -1,12 +1,11 @@
 #pragma once
 #include <cstdint>
 
-namespace TailSync {
 #pragma pack(1)
 struct Colour {
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
+  uint8_t red = 0;
+  uint8_t green = 0;
+  uint8_t blue = 0;
 };
 
 #pragma pack(1)
@@ -41,4 +40,3 @@ Colour AverageColour(Colour, Colour);
 Colour AverageColour(Colour, Colour, Colour, Colour);
 
 void ParsePacket(const uint8_t *mac, const uint8_t *data, int len);
-} // namespace TailSync

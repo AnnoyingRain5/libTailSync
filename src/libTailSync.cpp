@@ -1,12 +1,11 @@
-#include "libTailSync.h"
 #include <Arduino.h>
 #include <cstdint>
-using namespace TailSync;
+#include <libTailSync.h>
 
 // user callbacks
-TailSync::handleColour handleColour_ = nullptr;
-TailSync::handlePulse handlePulse_ = nullptr;
-TailSync::handleEndSession handleEndSession_ = nullptr;
+handleColour handleColour_ = nullptr;
+handlePulse handlePulse_ = nullptr;
+handleEndSession handleEndSession_ = nullptr;
 
 Channel currentChannel;
 
@@ -48,11 +47,10 @@ bool checkPacket(PacketHeader header, const uint8_t *mac, int len) {
   return true;
 }
 
-void setColourCallback(TailSync::handleColour cb) { handleColour_ = cb; }
-void setPulseCallback(TailSync::handlePulse cb) { handlePulse_ = cb; }
-void setEndSessionCallback(TailSync::handleEndSession cb) {
-  handleEndSession_ = cb;
-}
+void setColourCallback(handleColour cb) { handleColour_ = cb; }
+
+void setPulseCallback(handlePulse cb) { handlePulse_ = cb; }
+void setEndSessionCallback(handleEndSession cb) { handleEndSession_ = cb; }
 
 Colour AverageColour(Colour c1, Colour c2) {
   Colour out;
