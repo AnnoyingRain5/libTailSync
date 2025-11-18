@@ -1,13 +1,16 @@
 #include <Arduino.h>
 #include <cstdint>
 #include <libTailSync.h>
+#define currentChannel knownChannels[channelIndex]
 
 // user callbacks
 handleColour handleColour_ = nullptr;
 handlePulse handlePulse_ = nullptr;
 handleEndSession handleEndSession_ = nullptr;
+handleMetaChange handleMetaChange_ = nullptr;
 
-Channel currentChannel;
+uint8_t channelIndex = 0;
+Channel knownChannels[64] = {};
 
 static uint8_t zero_mac[6] = {0, 0, 0, 0, 0, 0};
 
@@ -26,11 +29,13 @@ bool checkPacket(PacketHeader header, const uint8_t *mac, int len) {
   }
   if (header.getversion() != 0) {
     Serial.printf("[ERROR]: Recieved seemingly valid packet with unsupported "
-                  "version \"%d\"",
+                  "version \"%d\"\r\n",
                   header.getversion());
     return false;
   }
   // if this is on a different "channel", and is not a meta packet
+  // this will fail if the sender has a null mac, however that is kinda their
+  // fault tbh
   if ((memcmp(mac, currentChannel.mac, 6) != 0 && header.gettype() != 2)) {
     // if there is no channel selected
     if (memcmp(currentChannel.mac, zero_mac, 6) == 0) {
@@ -51,6 +56,7 @@ void setColourCallback(handleColour cb) { handleColour_ = cb; }
 
 void setPulseCallback(handlePulse cb) { handlePulse_ = cb; }
 void setEndSessionCallback(handleEndSession cb) { handleEndSession_ = cb; }
+void setMetaChangeCallback(handleMetaChange cb) { handleMetaChange_ = cb; }
 
 Colour AverageColour(Colour c1, Colour c2) {
   Colour out;
@@ -70,7 +76,6 @@ Colour AverageColour(Colour c1, Colour c2, Colour c3, Colour c4) {
 
 // ensures packet is valid, then calls the appropriate callback
 void ParsePacket(const uint8_t *mac, const uint8_t *data, int len) {
-  Serial.println("got packet!");
   PacketHeader header;
   // ensure packet is at least the length of the header
   if (len < sizeof(PacketHeader)) {
@@ -101,6 +106,16 @@ void ParsePacket(const uint8_t *mac, const uint8_t *data, int len) {
     }
     break;
   }
+  // meta
+  case 0x2: {
+    MetaPacket metaPacket;
+    const uint8_t *payload_start = data + sizeof(PacketHeader);
+    memcpy(&metaPacket, payload_start, sizeof(MetaPacket));
+    if (handleMetaChange_ != nullptr) {
+      handleMetaChange_(metaPacket);
+    }
+    break;
+  }
   // endSession
   case 0xf: {
     if (handleEndSession_ != nullptr) {
@@ -109,7 +124,7 @@ void ParsePacket(const uint8_t *mac, const uint8_t *data, int len) {
     break;
   }
   default: {
-    Serial.printf("[ERROR]: Unknown PacketType %d", header.gettype());
+    Serial.printf("[ERROR]: Unknown PacketType %d\r\n", header.gettype());
     break;
   }
   }

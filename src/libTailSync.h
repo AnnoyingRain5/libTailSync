@@ -19,7 +19,15 @@ struct PacketHeader {
 
 #pragma pack(1)
 struct ColourPacket {
-  Colour colour[8][8]; // 8x8 grid of pixels
+  Colour colour[8][8] = {}; // 8x8 grid of pixels
+};
+
+#pragma pack(1)
+struct MetaPacket {
+  uint8_t channelName[32] = {};
+  uint8_t djName[32] = {};
+  uint8_t songName[32] = {};
+  uint8_t colourRate = 25; // assume 25 colour packets per second
 };
 
 struct Channel {
@@ -30,9 +38,10 @@ struct Channel {
 typedef void (*handleEndSession)();
 typedef void (*handlePulse)();
 typedef void (*handleColour)(ColourPacket packet);
+typedef void (*handleMetaChange)(MetaPacket packet);
 
 void setColourCallback(handleColour);
-
+void setMetaChangeCallback(handleMetaChange);
 void setPulseCallback(handlePulse);
 void setEndSessionCallback(handleEndSession);
 
