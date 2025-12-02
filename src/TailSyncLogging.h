@@ -6,6 +6,6 @@ class Logger {
   const char *moduleName;
 
 public:
-  Logger(const char *modName) : moduleName(modName) {};
+  explicit Logger(const char *modName) : moduleName(modName) {};
   void log(logLevel level, const char *fmt, ...);
 };
