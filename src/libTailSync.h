@@ -12,6 +12,7 @@ struct Colour {
 struct PacketHeader {
   uint8_t magic[2]; // Should be ASCII "TS"
   uint8_t version_type;
+  uint8_t nonce; // not a real nonce, just used for de-dupe
 
   uint8_t getversion() const;
   uint8_t gettype() const;
@@ -34,6 +35,8 @@ struct Channel {
   uint8_t name[32] = {0};
   uint8_t mac[6] = {0};
 };
+
+extern uint8_t lastNonce;
 
 typedef void (*handleEndSession)();
 typedef void (*handlePulse)();
