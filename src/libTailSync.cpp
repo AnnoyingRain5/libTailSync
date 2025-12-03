@@ -2,7 +2,7 @@
 #include <TailSyncLogging.h>
 #include <cstdint>
 #include <libTailSync.h>
-#define currentChannel knownChannels[channelIndex]
+#define currentChannel (knownChannels[channelIndex])
 
 // user callbacks
 handleColour handleColour_ = nullptr;

@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 enum logLevel { FATAL = 0, CRITICAL = 1, ERROR = 2, WARNING = 3, DEBUG = 4 };

@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <cstdint>
 
 #pragma pack(1)
@@ -20,7 +21,11 @@ struct PacketHeader {
 
 #pragma pack(1)
 struct ColourPacket {
-  Colour colour[8][8] = {}; // 8x8 grid of pixels
+  Colour head[6] = {};
+  Colour body[6] = {};
+  Colour arms[6] = {};
+  Colour legs[6] = {};
+  Colour tail[6] = {};
 };
 
 #pragma pack(1)
