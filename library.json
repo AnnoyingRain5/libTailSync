@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+  "name": "libTailSync",
+  "version": "0.1.0",
+  "description": "Library for parsing TailSync packets. Can be used on either client or server.",
+  "frameworks": "Arduino",
+  "keywords": "TailSync",
+  "headers": [
+    "libTailSync.h",
+    "TailSyncLogging.h"
+  ]
+}
