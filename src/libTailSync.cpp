@@ -18,7 +18,7 @@ Channel knownChannels[64] = {};
 uint8_t lastNonce = 0;
 uint16_t buttonHeldCounter = 0;
 bool buttonHeld = false;
-Mode controllerMode = MODE_TAILSYNC; // TODO change this to MODE_USER
+Mode controllerMode = MODE_USER; // TODO change this to MODE_USER
 
 #ifdef LIBTAILSYNC_MODE_BUTTON
 uint8_t modeButtonPin = LIBTAILSYNC_MODE_BUTTON;
@@ -204,6 +204,15 @@ void ParsePacket(const uint8_t *mac, const uint8_t *data, int len) {
 }
 
 void tick() {
+  // 15 seconds higher than the switch channel timeout
+  // overkill? Yes, but it's fine
+  if (millis() - currentChannel.lastHeard >= 45000) {
+    controllerMode = MODE_USER;
+    if (handleColour_ != nullptr) {
+      // send a fake colour packet to blank out the LEDs
+      handleColour_(ColourPacket());
+    }
+  }
   // 255 is the sentinel value, if it's 255, it's not set
   if (modeButtonPin != 255) {
     if (digitalRead(modeButtonPin) == LOW) {
