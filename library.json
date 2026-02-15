@@ -7,6 +7,10 @@
   "keywords": "TailSync",
   "headers": [
     "libTailSync.h",
-    "TailSyncLogging.h"
-  ]
+    "Logging/TailSyncLogging.h",
+    "WebConfig/TailSyncWebConfig.h"
+  ],
+  "build": {
+    "extraScript": "bin2c.py"
+  }
 }

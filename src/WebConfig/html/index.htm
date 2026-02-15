@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Update</title>
+    <style>
+        body {
+            background-color: #3794E0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            padding-left: 20%;
+            padding-right: 20%;
+            padding-top: 1%;
+        }
+
+        .content {
+            text-align: center;
+            background-color: #56566e91;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1em 1em;
+            border-radius: 10px;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <h2>Upload new firmware</h2>
+    <form id="upload_form" enctype="multipart/form-data">
+        <input type="file" name="update" required>
+        <input type="submit" value="Update">
+    </form>
+    <div id="prg">progress: 0%</div>
+    <form method="post" action="/reboot">
+        <input type="submit" value="Exit config mode (reboot)">
+    </form>
+</div>
+<script>
+    document.getElementById('upload_form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = document.getElementById('upload_form');
+        const data = new FormData(form);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function (evt) {
+            if (evt.lengthComputable) {
+                const per = Math.round((evt.loaded / evt.total) * 100);
+                document.getElementById('prg').textContent = 'progress: ' + per + '%';
+            }
+        });
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log('Upload complete');
+            }
+        };
+        xhr.open('POST', '/update', true);
+        xhr.send(data);
+    });
+</script>
+</body>
+</html>

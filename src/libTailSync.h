@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Arduino.h>
 #ifdef LIBTAILSYNC_USE_FASTLED
 #include <FastLED.h>
 #endif
@@ -16,6 +17,12 @@ struct Colour {
   operator CRGB() const { return CRGB{red, green, blue}; }
 #endif
 };
+
+extern uint8_t modeButtonPin;
+void initTailSync();
+
+enum Mode { MODE_TAILSYNC = 0, MODE_USER = 1, MODE_CONFIG = 2 };
+extern Mode controllerMode;
 
 struct PacketHeader {
   uint8_t magic[2]; // Should be ASCII "TS"
@@ -45,6 +52,7 @@ struct MetaPacket {
 struct Channel {
   uint8_t name[32] = {0};
   uint8_t mac[6] = {0};
+  uint32_t lastHeard = 0;
 };
 
 extern uint8_t lastNonce;
@@ -53,11 +61,14 @@ typedef void (*handleEndSession)();
 typedef void (*handlePulse)();
 typedef void (*handleColour)(const ColourPacket &packet);
 typedef void (*handleMetaChange)(const MetaPacket &packet);
+typedef void (*handleUserModeTick)();
 
 void setColourCallback(handleColour);
 void setMetaChangeCallback(handleMetaChange);
 void setPulseCallback(handlePulse);
 void setEndSessionCallback(handleEndSession);
+void setUserModeTickCallback(handleUserModeTick);
+void tick();
 
 Colour AverageColour(Colour, Colour);
 Colour AverageColour(Colour, Colour, Colour, Colour);

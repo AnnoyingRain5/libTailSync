@@ -8,5 +8,5 @@ class Logger {
 
 public:
   explicit Logger(const char *modName) : moduleName(modName) {};
-  void log(logLevel level, const char *fmt, ...);
+  void log(logLevel level, const char *fmt, ...) const;
 };

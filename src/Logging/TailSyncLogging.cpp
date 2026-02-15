@@ -18,7 +18,7 @@ const char *getName(logLevel level) {
   }
 }
 
-void Logger::log(logLevel level, const char *fmt, ...) {
+void Logger::log(const logLevel level, const char *fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   char *buf = nullptr;
@@ -27,6 +27,12 @@ void Logger::log(logLevel level, const char *fmt, ...) {
     return;
   }
   va_end(args);
+  if (level == FATAL) {
+    while (true) {
+      Serial.printf("[%s] [%s] %s\n", moduleName, getName(level), buf);
+      delay(200);
+    }
+  }
   Serial.printf("[%s] [%s] %s\n", moduleName, getName(level), buf);
   free(buf);
 }
